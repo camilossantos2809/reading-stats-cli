@@ -5,14 +5,19 @@ import (
 	"log"
 )
 
-func getHtmlData(db *sql.DB) []string {
+type GetHtmlData struct {
+	BookId int
+	Html   string
+}
+
+func getHtmlData(db *sql.DB) []GetHtmlData {
 	rows, err := db.Query("SELECT book_id, html FROM 'reading_progress_html'")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
-	var htmlDataList []string
+	var htmlDataList []GetHtmlData
 	for rows.Next() {
 		var bookId int
 		var htmlData string
@@ -21,7 +26,7 @@ func getHtmlData(db *sql.DB) []string {
 		if err != nil {
 			log.Fatal(err)
 		}
-		htmlDataList = append(htmlDataList, htmlData)
+		htmlDataList = append(htmlDataList, GetHtmlData{BookId: bookId, Html: htmlData})
 	}
 
 	err = rows.Err()

@@ -19,14 +19,14 @@ func main() {
 	htmlDataList := getHtmlData(db)
 
 	for _, htmlData := range htmlDataList {
-		doc, err := html.Parse(strings.NewReader(htmlData))
+		doc, err := html.Parse(strings.NewReader(htmlData.Html))
 		if err != nil {
 			fmt.Println("Error parsing HTML:", err)
 			continue
 		}
 
 		progresses := ExtractProgress(doc)
-		// fmt.Printf("(ID: %d)\n", bookId)
+		fmt.Printf("(ID: %d)\n", htmlData.BookId)
 		for _, progress := range progresses {
 			fmt.Printf("  {date: %q, progress: %d}\n", progress.Date, progress.Progress)
 		}
