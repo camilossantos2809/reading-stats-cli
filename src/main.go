@@ -29,7 +29,11 @@ func main() {
 		fmt.Printf("(ID: %d)\n", htmlData.BookId)
 		for _, progress := range progresses {
 			fmt.Printf("  {date: %q, progress: %d}\n", progress.Date, progress.Progress)
+			AddBookReadingProgress(db, AddBookReadingProgressParams{
+				BookId: htmlData.BookId, DateRead: progress.Date, Progress: progress.Progress,
+			})
 		}
+
 	}
 
 }

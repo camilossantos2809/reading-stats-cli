@@ -36,3 +36,20 @@ func getHtmlData(db *sql.DB) []GetHtmlData {
 
 	return htmlDataList
 }
+
+type AddBookReadingProgressParams struct {
+	BookId   int
+	DateRead string
+	Progress int
+}
+
+func AddBookReadingProgress(db *sql.DB, params AddBookReadingProgressParams) {
+	_, err := db.Exec(`
+		INSERT INTO book_reading_progress (book_id, date_read, progress) VALUES (?, ?, ?)
+			ON CONFLICT (book_id, date_read) DO UPDATE SET progress = excluded.progress
+				WHERE book_reading_progress.progress < excluded.progress;
+		`, params.BookId, params.DateRead, params.Progress)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
