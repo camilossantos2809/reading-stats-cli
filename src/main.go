@@ -28,7 +28,7 @@ func main() {
 		progresses := ExtractProgress(doc)
 		// fmt.Printf("(ID: %d)\n", bookId)
 		for _, progress := range progresses {
-			fmt.Printf("  {date: %q, progress: %q}\n", progress.Date, progress.Progress)
+			fmt.Printf("  {date: %q, progress: %d}\n", progress.Date, progress.Progress)
 		}
 	}
 
