@@ -6,7 +6,7 @@ import (
 )
 
 type GetHtmlData struct {
-	BookId int
+	BookId string
 	Html   string
 }
 
@@ -19,7 +19,7 @@ func getHtmlData(db *sql.DB) []GetHtmlData {
 
 	var htmlDataList []GetHtmlData
 	for rows.Next() {
-		var bookId int
+		var bookId string
 		var htmlData string
 
 		err := rows.Scan(&bookId, &htmlData)
@@ -38,7 +38,7 @@ func getHtmlData(db *sql.DB) []GetHtmlData {
 }
 
 type AddBookReadingProgressParams struct {
-	BookId   int
+	BookId   string
 	DateRead string
 	Progress int
 }

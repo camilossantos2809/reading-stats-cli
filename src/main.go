@@ -24,16 +24,12 @@ func main() {
 			fmt.Println("Error parsing HTML:", err)
 			continue
 		}
-
 		progresses := ExtractProgress(doc)
-		fmt.Printf("(ID: %d)\n", htmlData.BookId)
+		fmt.Printf("(ID: %s)\n", htmlData.BookId)
 		for _, progress := range progresses {
-			fmt.Printf("  {date: %q, progress: %d}\n", progress.Date, progress.Progress)
 			AddBookReadingProgress(db, AddBookReadingProgressParams{
 				BookId: htmlData.BookId, DateRead: progress.Date, Progress: progress.Progress,
 			})
 		}
-
 	}
-
 }
