@@ -31,5 +31,6 @@ func main() {
 				BookId: htmlData.BookId, DateRead: progress.Date, Progress: progress.Progress,
 			})
 		}
+		UpdatePagesRead(db)
 	}
 }

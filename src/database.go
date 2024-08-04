@@ -53,3 +53,25 @@ func AddBookReadingProgress(db *sql.DB, params AddBookReadingProgressParams) {
 		log.Fatal(err)
 	}
 }
+
+// Atualiza a quantidade de páginas lidas no dia, com base na última página lida no dia anterior
+func UpdatePagesRead(db *sql.DB) {
+	_, err := db.Exec(`
+		WITH previous_reading AS (
+			SELECT 
+				book_id,
+				date_read,
+				LAG (progress, 1, 0) OVER (PARTITION BY book_id ORDER BY date_read) AS last_progress
+			FROM book_reading_progress
+		)
+		UPDATE book_reading_progress
+		SET progress_previous = pr.last_progress,
+			pages_read = progress - pr.last_progress
+		FROM previous_reading pr
+		WHERE book_reading_progress.book_id = pr.book_id
+			AND book_reading_progress.date_read = pr.date_read;
+		`)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
