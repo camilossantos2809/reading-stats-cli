@@ -6,9 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+<script>
+  function onPressParseSkoobHtml() {
+    fetch('/parseSkoobHtml', { method: "POST" })
+      .then(response => response.json())
+      .then(data => alert(data))
+      .catch(error => console.error(error));
+  }
+</script>
 
 <body>
-  <button onclick="window.location.href = '/parseSkoobHtml'">Progress</button>
+  <button onclick="onPressParseSkoobHtml()">Parse Skoob HTML</button>
 </body>
 
 </html>

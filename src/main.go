@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,8 +21,9 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/parseSkoobHtml", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /parseSkoobHtml", func(w http.ResponseWriter, r *http.Request) {
 		parseSkoobHtml(db)
+		json.NewEncoder(w).Encode("{response: 'ok'}")
 	})
 	port := ":8080"
 	server := &http.Server{
