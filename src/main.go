@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,6 +17,25 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/parseSkoobHtml", func(w http.ResponseWriter, r *http.Request) {
+		parseSkoobHtml(db)
+	})
+	port := ":8080"
+	server := &http.Server{
+		Addr:    port,
+		Handler: mux,
+	}
+
+	log.Println("Servidor iniciado em http://localhost:" + port)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func parseSkoobHtml(db *sql.DB) {
 	htmlDataList := getHtmlData(db)
 
 	for _, htmlData := range htmlDataList {
