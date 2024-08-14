@@ -21,6 +21,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("GET /books", booksListHandler(db))
 	mux.HandleFunc("POST /parseSkoobHtml", func(w http.ResponseWriter, r *http.Request) {
 		parseSkoobHtml(db)
 		json.NewEncoder(w).Encode("{response: 'ok'}")

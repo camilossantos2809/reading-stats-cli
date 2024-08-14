@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <title>Books</title>
+</head>
+
+<body>
+  <h1 class="title">Lista de Livros</h1>
+  <table class="table is-striped is-narrow is-hoverable">
+    <tr>
+      <th>Nome</th>
+      <th>ISBN</th>
+      <th>Data</th>
+      <th>Progresso</th>
+    </tr>
+    {{range .}}
+    <tr>
+      <td>{{.Name}}</td>
+      <td>{{.Isbn}}</td>
+      <td>{{.Date}}</td>
+      <td>{{.Progress}}</td>
+    </tr>
+    {{end}}
+  </table>
+</body>
+
+</html>

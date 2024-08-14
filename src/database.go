@@ -75,3 +75,40 @@ func UpdatePagesRead(db *sql.DB) {
 		log.Fatal(err)
 	}
 }
+
+type GetBooksResult struct {
+	Name     string
+	Isbn     string
+	Date     string
+	Progress int
+}
+
+func GetBooks(db *sql.DB) []GetBooksResult {
+	rows, err := db.Query(`
+		select isbn, name , max(date_read) as date_read, max(progress) as progress
+		from book b 
+			inner join book_reading_progress brp on b.isbn = brp.book_id 
+		group by isbn, name
+		order by date_read desc;
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var books []GetBooksResult
+	for rows.Next() {
+		var book GetBooksResult
+		err := rows.Scan(&book.Isbn, &book.Name, &book.Date, &book.Progress)
+		if err != nil {
+			log.Fatal(err)
+		}
+		books = append(books, book)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return books
+
+}
