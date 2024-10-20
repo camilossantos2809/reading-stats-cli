@@ -1,23 +1,23 @@
-package main
+package database
 
 import (
 	"database/sql"
 	"log"
 )
 
-type GetHtmlData struct {
+type GetHtmlDataStruct struct {
 	BookId string
 	Html   string
 }
 
-func getHtmlData(db *sql.DB) []GetHtmlData {
+func GetHtmlData(db *sql.DB) []GetHtmlDataStruct {
 	rows, err := db.Query("SELECT book_id, html FROM 'reading_progress_html'")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
-	var htmlDataList []GetHtmlData
+	var htmlDataList []GetHtmlDataStruct
 	for rows.Next() {
 		var bookId string
 		var htmlData string
@@ -26,7 +26,7 @@ func getHtmlData(db *sql.DB) []GetHtmlData {
 		if err != nil {
 			log.Fatal(err)
 		}
-		htmlDataList = append(htmlDataList, GetHtmlData{BookId: bookId, Html: htmlData})
+		htmlDataList = append(htmlDataList, GetHtmlDataStruct{BookId: bookId, Html: htmlData})
 	}
 
 	err = rows.Err()
@@ -77,7 +77,7 @@ func UpdatePagesRead(db *sql.DB) {
 }
 
 type GetBooksResult struct {
-	Name     string
+	Name     string `json:"name"`
 	Isbn     string
 	Date     string
 	Progress int

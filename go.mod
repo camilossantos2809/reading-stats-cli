@@ -1,4 +1,4 @@
-module webscraping
+module reading-stats
 
 go 1.22.5
 

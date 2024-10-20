@@ -1,8 +1,10 @@
-package main
+package routes
 
 import (
 	"database/sql"
+	"encoding/json"
 	"net/http"
+	"reading-stats/internal/database"
 	"text/template"
 	"time"
 )
@@ -20,7 +22,7 @@ func formatDate(dateStr string) (string, error) {
 	return t.Format(outputLayout), nil
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	data := interface{}(nil)
 	tmpl, err := template.ParseFiles("src/templates/index.html")
 	if err != nil {
@@ -34,31 +36,29 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func booksListHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func BooksListHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles("src/templates/books.html")
-		if err != nil {
-			http.Error(w, "Erro ao carregar template", http.StatusInternalServerError)
-			return
-		}
-		data := GetBooks(db)
-		var dataWithFormattedDate []GetBooksResult
+		data := database.GetBooks(db)
+		var dataWithFormattedDate []database.GetBooksResult
 		for _, book := range data {
 			fmtDate, err := formatDate(book.Date)
 			if err != nil {
 				http.Error(w, "Erro ao formatar data", http.StatusInternalServerError)
 				return
 			}
-			dataWithFormattedDate = append(dataWithFormattedDate, GetBooksResult{
+			dataWithFormattedDate = append(dataWithFormattedDate, database.GetBooksResult{
 				Name:     book.Name,
 				Isbn:     book.Isbn,
 				Date:     fmtDate,
 				Progress: book.Progress,
 			})
 		}
-		err = tmpl.Execute(w, dataWithFormattedDate)
+		jsonData, err := json.Marshal(dataWithFormattedDate)
 		if err != nil {
-			http.Error(w, "Erro ao renderizar template", http.StatusInternalServerError)
+			http.Error(w, "Erro ao formatar JSON", http.StatusInternalServerError)
+			return
 		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonData)
 	}
 }

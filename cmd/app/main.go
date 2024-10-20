@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reading-stats/internal/database"
+	"reading-stats/internal/routes"
+	"reading-stats/internal/webscraping"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -20,8 +23,8 @@ func main() {
 	defer db.Close()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("GET /books", booksListHandler(db))
+	mux.HandleFunc("/", routes.HomeHandler)
+	mux.HandleFunc("GET /books", routes.BooksListHandler(db))
 	mux.HandleFunc("POST /parseSkoobHtml", func(w http.ResponseWriter, r *http.Request) {
 		parseSkoobHtml(db)
 		json.NewEncoder(w).Encode("{response: 'ok'}")
@@ -34,12 +37,12 @@ func main() {
 
 	log.Println("Servidor iniciado em http://localhost:" + port)
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
 }
 
 func parseSkoobHtml(db *sql.DB) {
-	htmlDataList := getHtmlData(db)
+	htmlDataList := database.GetHtmlData(db)
 
 	for _, htmlData := range htmlDataList {
 		doc, err := html.Parse(strings.NewReader(htmlData.Html))
@@ -47,13 +50,13 @@ func parseSkoobHtml(db *sql.DB) {
 			fmt.Println("Error parsing HTML:", err)
 			continue
 		}
-		progresses := ExtractProgress(doc)
+		progresses := webscraping.ExtractProgress(doc)
 		fmt.Printf("(ID: %s)\n", htmlData.BookId)
 		for _, progress := range progresses {
-			AddBookReadingProgress(db, AddBookReadingProgressParams{
+			database.AddBookReadingProgress(db, database.AddBookReadingProgressParams{
 				BookId: htmlData.BookId, DateRead: progress.Date, Progress: progress.Progress,
 			})
 		}
-		UpdatePagesRead(db)
+		database.UpdatePagesRead(db)
 	}
 }
