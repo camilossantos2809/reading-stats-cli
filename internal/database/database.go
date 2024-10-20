@@ -78,9 +78,9 @@ func UpdatePagesRead(db *sql.DB) {
 
 type GetBooksResult struct {
 	Name     string `json:"name"`
-	Isbn     string
-	Date     string
-	Progress int
+	Isbn     string `json:"isbn"`
+	Date     string `json:"date"`
+	Progress int    `json:"progress"`
 }
 
 func GetBooks(db *sql.DB) []GetBooksResult {
